@@ -283,6 +283,58 @@ Build failed with 2 error(s) in 1.2s
 
 The way you enable MTP mode for `dotnet test` varies depending on what version of the .NET SDK you're using (meaning the version number that's printed when you run `dotnet --version` from your project folder).
 
+### Using .NET SDK version 10 or later
+
+To enable `dotnet test` to run your tests using MTP instead of VSTest, add/edit the `global.json` file in the root of your solution with the following:
+
+```json
+{
+  "test": {
+    "runner": "Microsoft.Testing.Platform"
+  }
+}
+```
+
+Now when running `dotnet test`, your output should look something like this:
+
+```shell
+$ dotnet test
+Running tests from bin\Debug\net8.0\MyFirstUnitTests.dll (net8.0|x64)
+failed MyFirstUnitTests.UnitTest1.FailingTest (8ms)
+  Assert.Equal() Failure: Values differ
+Expected: 5
+Actual:   4
+  from bin\Debug\net8.0\MyFirstUnitTests.dll (net8.0|x64)
+  Assert.Equal() Failure: Values differ
+  Expected: 5
+  Actual:   4
+    at MyFirstUnitTests.UnitTest1.FailingTest() in UnitTest1.cs:14
+failed MyFirstUnitTests.UnitTest1.MyFirstTheory(value: 6) (0ms)
+  Assert.True() Failure
+Expected: True
+Actual:   False
+  from bin\Debug\net8.0\MyFirstUnitTests.dll (net8.0|x64)
+  Assert.True() Failure
+  Expected: True
+  Actual:   False
+    at MyFirstUnitTests.UnitTest1.MyFirstTheory(Int32 value) in UnitTest1.cs:28
+bin\Debug\net8.0\MyFirstUnitTests.dll (net8.0|x64) failed with 2 error(s) (158ms)
+Exit code: 2
+  Standard output: xUnit.net v3 Microsoft.Testing.Platform Runner v3.1.0+03a071627b (64-bit .NET 8.0.22)
+
+Test run summary: Failed!
+  total: 5
+  failed: 2
+  succeeded: 3
+  skipped: 0
+  duration: 254ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+```
+
+The same command line options available in the Microsoft Testing Platform command line experience (described in the table above) are also available for `dotnet test`. For example, to filter tests to a single class with the Microsoft Testing Platform `dotnet test` experience, you could run: `dotnet test --filter-class ClassName`. Typing `dotnet test -?` from within your project folder will list all the available options (including built-in options, options provided by xUnit.net, and options from any [Microsoft Testing Platform features](#additional-microsoft-testing-platform-features) you have added).
+
+You can find additional configuration options for the Microsoft Testing Platform `dotnet test` integration here: [Microsoft.Testing.Platform mode of `dotnet test`](https://learn.microsoft.com/dotnet/core/testing/unit-testing-with-dotnet-test#microsofttestingplatform-mtp-mode-of-dotnet-test)
+
 ### Using .NET SDK version 8 or 9
 
 To enable `dotnet test` to run your tests using MTP instead of VSTest, add the following property to your project file (.csproj/.fsproj/.vbproj):
@@ -293,7 +345,7 @@ To enable `dotnet test` to run your tests using MTP instead of VSTest, add the f
 </PropertyGroup>
 ```
 
-Now when running `dotnet test`, your output should looks something like this:
+Now when running `dotnet test`, your output should look something like this:
 
 ```shell
 $ dotnet test
@@ -334,58 +386,6 @@ bin\Debug\net8.0\MyFirstUnitTests.exe --internal-msbuild-node testingplatform.pi
 ```
 
 The same command line options available in the Microsoft Testing Platform command line experience (described in the table above) are also available for `dotnet test`. The command line options are passed after `--`. For example, to filter tests to a single class with the Microsoft Testing Platform `dotnet test` experience, you could run: `dotnet test -- --filter-class ClassName`. This includes command line options from any [Microsoft Testing Platform features](#additional-microsoft-testing-platform-features) you may add.
-
-You can find additional configuration options for the Microsoft Testing Platform `dotnet test` integration here: [Microsoft.Testing.Platform mode of `dotnet test`](https://learn.microsoft.com/dotnet/core/testing/unit-testing-with-dotnet-test#microsofttestingplatform-mtp-mode-of-dotnet-test)
-
-### Using .NET SDK version 10 or later
-
-To enable `dotnet test` to run your tests using MTP instead of VSTest, add/edit the `global.json` file in the root of your solution with the following value:
-
-```json
-{
-  "test": {
-    "runner": "Microsoft.Testing.Platform"
-  }
-}
-```
-
-Now when running `dotnet test`, your output should looks something like this:
-
-```shell
-$ dotnet test
-Running tests from bin\Debug\net8.0\MyFirstUnitTests.dll (net8.0|x64)
-failed MyFirstUnitTests.UnitTest1.FailingTest (8ms)
-  Assert.Equal() Failure: Values differ
-Expected: 5
-Actual:   4
-  from bin\Debug\net8.0\MyFirstUnitTests.dll (net8.0|x64)
-  Assert.Equal() Failure: Values differ
-  Expected: 5
-  Actual:   4
-    at MyFirstUnitTests.UnitTest1.FailingTest() in UnitTest1.cs:14
-failed MyFirstUnitTests.UnitTest1.MyFirstTheory(value: 6) (0ms)
-  Assert.True() Failure
-Expected: True
-Actual:   False
-  from bin\Debug\net8.0\MyFirstUnitTests.dll (net8.0|x64)
-  Assert.True() Failure
-  Expected: True
-  Actual:   False
-    at MyFirstUnitTests.UnitTest1.MyFirstTheory(Int32 value) in UnitTest1.cs:28
-bin\Debug\net8.0\MyFirstUnitTests.dll (net8.0|x64) failed with 2 error(s) (158ms)
-Exit code: 2
-  Standard output: xUnit.net v3 Microsoft.Testing.Platform Runner v3.1.0+03a071627b (64-bit .NET 8.0.22)
-
-Test run summary: Failed!
-  total: 5
-  failed: 2
-  succeeded: 3
-  skipped: 0
-  duration: 254ms
-Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
-```
-
-The same command line options available in the Microsoft Testing Platform command line experience (described in the table above) are also available for `dotnet test`. For example, to filter tests to a single class with the Microsoft Testing Platform `dotnet test` experience, you could run: `dotnet test --filter-class ClassName`. Typing `dotnet test -?` from within your project folder will list all the available options (including built-in options, options provided by xUnit.net, and options from any [Microsoft Testing Platform features](#additional-microsoft-testing-platform-features) you have added).
 
 You can find additional configuration options for the Microsoft Testing Platform `dotnet test` integration here: [Microsoft.Testing.Platform mode of `dotnet test`](https://learn.microsoft.com/dotnet/core/testing/unit-testing-with-dotnet-test#microsofttestingplatform-mtp-mode-of-dotnet-test)
 
